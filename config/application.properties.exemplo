@@ -1,0 +1,2 @@
+# Copie este arquivo para config/application.properties e coloque a senha do seu MySQL
+spring.datasource.password=SUA_SENHA_AQUI

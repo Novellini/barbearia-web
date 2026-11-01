@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Agenda')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('agenda', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1>Agenda do dia</h1><p class="sub">Clique em DETALHES para gerenciar um agendamento</p></div>
+        <a class="botao" th:href="@{/agenda/novo(data=${data})}">+ AGENDAMENTO</a>
+    </header>
+
+    <form class="barra" th:action="@{/agenda}" method="get">
+        <label for="data">Data:</label>
+        <a class="botao secundario" th:href="@{/agenda(data=${data.minusDays(1)})}" title="Dia anterior">&lt;</a>
+        <input id="data" type="date" name="data" th:value="${data}" onchange="this.form.submit()">
+        <a class="botao secundario" th:href="@{/agenda(data=${data.plusDays(1)})}" title="Próximo dia">&gt;</a>
+        <a class="botao secundario" th:href="@{/agenda}" th:unless="${hoje}">Hoje</a>
+        <span class="sub" th:text="${#lists.size(agendamentos)} + ' agendamento(s)'"></span>
+    </form>
+
+    <table class="tabela">
+        <thead>
+        <tr><th>Horário</th><th>Cliente</th><th>Barbeiro</th><th>Serviço</th><th>Status</th><th>Pagamento</th><th>Ação</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${agendamentos}">
+            <td><strong th:text="${#temporals.format(a.dataHora, 'HH:mm')}"></strong></td>
+            <td th:text="${a.cliente.nome}"></td>
+            <td th:text="${a.barbeiro.nome}"></td>
+            <td th:text="${a.nomesServicos}"></td>
+            <td><span class="etiqueta" th:classappend="${@fmt.cor(a.status)}" th:text="${@fmt.status(a.status)}"></span></td>
+            <td><span class="etiqueta" th:classappend="${a.pagamento} ? ${@fmt.cor(a.pagamento.status)} : 'neutro'"
+                      th:text="${a.pagamento} ? ${@fmt.status(a.pagamento.status)} : '-'"></span></td>
+            <td><a class="link" th:href="@{/agenda/{id}(id=${a.id})}">DETALHES</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(agendamentos)}">
+            <td colspan="7" class="vazio">Nenhum agendamento para esta data.</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</div>
+</body>
+</html>

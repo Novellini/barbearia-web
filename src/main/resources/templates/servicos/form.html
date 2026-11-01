@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Serviço')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('servicos', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1 th:text="${servico.id == null} ? 'Novo serviço' : 'Editar serviço'">Serviço</h1></div>
+    </header>
+
+    <form class="campos estreito" th:action="@{/servicos/salvar}" th:object="${servico}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <label for="nome">Nome *</label>
+        <input id="nome" th:field="*{nome}" placeholder="Ex.: Corte masculino" th:errorclass="invalido" autofocus>
+        <p class="erro-campo" th:errors="*{nome}"></p>
+
+        <label for="descricao">Descrição</label>
+        <input id="descricao" th:field="*{descricao}" placeholder="Opcional">
+
+        <div class="linha-campos">
+            <div>
+                <label for="preco">Preço (R$) *</label>
+                <input id="preco" type="number" step="0.01" min="0" th:field="*{preco}" placeholder="35.00" th:errorclass="invalido">
+                <p class="erro-campo" th:errors="*{preco}"></p>
+            </div>
+            <div>
+                <label for="duracaoMin">Duração (minutos) *</label>
+                <input id="duracaoMin" type="number" step="5" min="5" max="480" th:field="*{duracaoMin}" th:errorclass="invalido">
+                <p class="erro-campo" th:errors="*{duracaoMin}"></p>
+            </div>
+        </div>
+
+        <label class="opcao"><input type="checkbox" th:field="*{ativo}"> Serviço ativo (aparece no agendamento)</label>
+
+        <div class="acoes-rodape direita">
+            <a class="botao secundario" th:href="@{/servicos}">CANCELAR</a>
+            <button type="submit" class="botao">SALVAR</button>
+        </div>
+    </form>
+
+    <form th:if="${servico.id != null}" th:action="@{/servicos/{id}/excluir(id=${servico.id})}" method="post"
+          class="zona-perigo" onsubmit="return confirm('Excluir este serviço?')">
+        <button class="botao secundario perigo">EXCLUIR SERVIÇO</button>
+    </form>
+</section>
+</div>
+</body>
+</html>

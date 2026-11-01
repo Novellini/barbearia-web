@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Serviços')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('servicos', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1>Serviços</h1></div>
+        <a class="botao" th:href="@{/servicos/novo}">+ NOVO SERVIÇO</a>
+    </header>
+
+    <form class="busca" th:action="@{/servicos}" method="get">
+        <label for="busca">Buscar serviço</label>
+        <div class="barra">
+            <input id="busca" name="busca" th:value="${busca}" placeholder="Nome ou descrição">
+            <button class="botao secundario">Buscar</button>
+            <a class="link" th:href="@{/servicos}" th:if="${busca}">Limpar</a>
+            <span class="sub" th:text="${busca} ? ${#lists.size(servicos)} + ' de ' + ${total} + ' encontrado(s)' : ${total} + ' cadastrado(s)'"></span>
+        </div>
+    </form>
+
+    <table class="tabela">
+        <thead><tr><th>Nome</th><th>Descrição</th><th>Preço</th><th>Duração</th><th>Ativo</th><th>Ação</th></tr></thead>
+        <tbody>
+        <tr th:each="s : ${servicos}">
+            <td th:text="${s.nome}"></td>
+            <td th:text="${s.descricao ?: '-'}"></td>
+            <td th:text="${@fmt.moeda(s.preco)}"></td>
+            <td th:text="${s.duracaoMin + ' min'}"></td>
+            <td><span class="etiqueta" th:classappend="${s.ativo} ? 'sucesso' : 'neutro'" th:text="${s.ativo} ? 'Sim' : 'Não'"></span></td>
+            <td><a class="link" th:href="@{/servicos/{id}/editar(id=${s.id})}">EDITAR</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(servicos)}"><td colspan="6" class="vazio">Nenhum serviço encontrado.</td></tr>
+        </tbody>
+    </table>
+</section>
+</div>
+</body>
+</html>

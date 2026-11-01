@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Novo agendamento')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('agenda', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1>Novo agendamento</h1><p class="sub">Preencha os dados do atendimento</p></div>
+    </header>
+
+    <form id="form-agendamento" th:action="@{/agenda/novo}" th:object="${form}" method="post"
+          th:attr="data-horarios=@{/agenda/horarios}">
+        <div class="aviso erro" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+
+        <div class="duas-colunas">
+            <div class="campos">
+                <label for="clienteId">Cliente</label>
+                <select id="clienteId" th:field="*{clienteId}">
+                    <option value="">Selecionar cliente</option>
+                    <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome + ' — ' + c.telefone}"></option>
+                </select>
+                <p class="erro-campo" th:errors="*{clienteId}"></p>
+                <p class="dica" th:if="${#lists.isEmpty(clientes)}">Nenhum cliente cadastrado. <a th:href="@{/clientes/novo}">Cadastrar cliente</a></p>
+
+                <label for="barbeiroId">Barbeiro</label>
+                <select id="barbeiroId" th:field="*{barbeiroId}">
+                    <option value="">Selecionar barbeiro</option>
+                    <option th:each="b : ${barbeiros}" th:value="${b.id}" th:text="${b.nome}"></option>
+                </select>
+                <p class="erro-campo" th:errors="*{barbeiroId}"></p>
+
+                <label>Serviços (marque um ou mais)</label>
+                <div class="lista-servicos">
+                    <label class="opcao" th:each="s : ${servicos}">
+                        <input type="checkbox" th:field="*{servicoIds}" th:value="${s.id}"
+                               th:attr="data-nome=${s.nome},data-preco=${s.preco},data-duracao=${s.duracaoMin}">
+                        <span th:text="${s.nome}"></span>
+                        <small th:text="${@fmt.moeda(s.preco) + ' · ' + s.duracaoMin + ' min'}"></small>
+                    </label>
+                    <p class="dica" th:if="${#lists.isEmpty(servicos)}">Nenhum serviço ativo cadastrado.</p>
+                </div>
+                <p class="erro-campo" th:errors="*{servicoIds}"></p>
+
+                <div class="linha-campos">
+                    <div>
+                        <label for="data">Data</label>
+                        <input id="data" type="date" th:field="*{data}" th:attr="min=${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}">
+                        <p class="erro-campo" th:errors="*{data}"></p>
+                    </div>
+                    <div>
+                        <label for="horario">Horário disponível</label>
+                        <select id="horario" name="horario" th:attr="data-selecionado=${form.horario}">
+                            <option value="" th:text="${form.barbeiroId == null} ? 'Selecione o barbeiro' : 'Selecionar horário'"></option>
+                            <option th:each="h : ${horarios}" th:value="${h}" th:text="${h}"
+                                    th:selected="${form.horario != null and #strings.startsWith(form.horario.toString(), h)}"></option>
+                        </select>
+                        <p class="erro-campo" th:errors="*{horario}"></p>
+                    </div>
+                </div>
+
+                <label for="observacao">Observação (opcional)</label>
+                <textarea id="observacao" th:field="*{observacao}" rows="3"></textarea>
+            </div>
+
+            <aside class="resumo">
+                <h2>Resumo do agendamento</h2>
+                <dl>
+                    <dt>Cliente:</dt><dd id="res-cliente">-</dd>
+                    <dt>Barbeiro:</dt><dd id="res-barbeiro">-</dd>
+                    <dt>Serviços:</dt><dd id="res-servicos">-</dd>
+                    <dt>Data:</dt><dd id="res-data">-</dd>
+                    <dt>Horário:</dt><dd id="res-horario">-</dd>
+                    <dt>Duração:</dt><dd id="res-duracao">-</dd>
+                </dl>
+                <div class="total"><span>Total:</span><strong id="res-total">R$ 0,00</strong></div>
+            </aside>
+        </div>
+
+        <div class="acoes-rodape direita">
+            <button type="submit" class="botao">CONFIRMAR</button>
+            <a class="botao secundario" th:href="@{/agenda}">CANCELAR</a>
+        </div>
+    </form>
+</section>
+</div>
+</body>
+</html>

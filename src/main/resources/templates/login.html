@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Login')}"></head>
+<body class="tela-login">
+<!-- Tela 1 do wireframe -->
+<form class="cartao-login" th:action="@{/login}" method="post">
+    <h1>BARBEARIA</h1>
+    <p class="sub">Sistema de gerenciamento</p>
+
+    <div class="aviso erro" th:if="${param.error}">Usuário ou senha inválidos.</div>
+    <div class="aviso sucesso" th:if="${param.saiu}">Você saiu do sistema.</div>
+
+    <label for="username">Usuário</label>
+    <input id="username" name="username" placeholder="Digite seu usuário" autofocus required>
+
+    <label for="password">Senha</label>
+    <input id="password" name="password" type="password" placeholder="Digite sua senha" required>
+
+    <button type="submit" class="botao largo">ENTRAR</button>
+    <p class="rodape-login">Acesso restrito ao usuário responsável pelo sistema.</p>
+</form>
+</body>
+</html>

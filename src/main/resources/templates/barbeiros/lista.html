@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Barbeiros')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('barbeiros', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1>Barbeiros</h1></div>
+        <a class="botao" th:href="@{/barbeiros/novo}">+ NOVO BARBEIRO</a>
+    </header>
+
+    <form class="busca" th:action="@{/barbeiros}" method="get">
+        <label for="busca">Buscar barbeiro</label>
+        <div class="barra">
+            <input id="busca" name="busca" th:value="${busca}" placeholder="Nome, telefone ou especialidade">
+            <button class="botao secundario">Buscar</button>
+            <a class="link" th:href="@{/barbeiros}" th:if="${busca}">Limpar</a>
+            <span class="sub" th:text="${busca} ? ${#lists.size(barbeiros)} + ' de ' + ${total} + ' encontrado(s)' : ${total} + ' cadastrado(s)'"></span>
+        </div>
+    </form>
+
+    <table class="tabela">
+        <thead><tr><th>Nome</th><th>Telefone</th><th>Especialidade</th><th>Ativo</th><th>Ação</th></tr></thead>
+        <tbody>
+        <tr th:each="b : ${barbeiros}">
+            <td th:text="${b.nome}"></td>
+            <td th:text="${b.telefone}"></td>
+            <td th:text="${b.especialidade ?: '-'}"></td>
+            <td><span class="etiqueta" th:classappend="${b.ativo} ? 'sucesso' : 'neutro'" th:text="${b.ativo} ? 'Sim' : 'Não'"></span></td>
+            <td><a class="link" th:href="@{/barbeiros/{id}/editar(id=${b.id})}">EDITAR</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(barbeiros)}"><td colspan="5" class="vazio">Nenhum barbeiro encontrado.</td></tr>
+        </tbody>
+    </table>
+</section>
+</div>
+</body>
+</html>

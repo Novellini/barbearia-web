@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Pagamento')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('pagamentos', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1>Registrar pagamento</h1><p class="sub">Relacionar pagamento ao atendimento selecionado</p></div>
+    </header>
+
+    <form class="barra" th:action="@{/pagamentos}" method="get">
+        <label for="data">Data do atendimento:</label>
+        <input id="data" type="date" name="data" th:value="${data}" onchange="this.form.submit()">
+    </form>
+
+    <p class="vazio" th:if="${selecionado == null}">Nenhum atendimento pendente de pagamento nesta data.</p>
+
+    <form class="campos estreito" th:if="${selecionado != null}" th:action="@{/pagamentos}" method="post">
+        <label for="agendamento">Agendamento</label>
+        <select id="agendamento" name="agendamento"
+                onchange="location.href='?data=' + document.getElementById('data').value + '&agendamento=' + this.value">
+            <option th:each="a : ${pendentes}" th:value="${a.id}" th:selected="${a.id == selecionado.id}"
+                    th:text="${a.cliente.nome + ' - ' + a.nomesServicos + ' - ' + #temporals.format(a.dataHora, 'HH:mm')}"></option>
+        </select>
+
+        <label for="valor">Valor (R$)</label>
+        <input id="valor" name="valor" inputmode="decimal"
+               th:value="${#numbers.formatDecimal(selecionado.total, 1, 'POINT', 2, 'COMMA')}">
+
+        <label>Forma de pagamento</label>
+        <div class="formas">
+            <label th:each="f, i : ${formas}" class="forma">
+                <input type="radio" name="forma" th:value="${f.key}" required>
+                <span th:text="${#strings.toUpperCase(f.value)}"></span>
+            </label>
+        </div>
+
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="pago">Pago</option>
+            <option value="pendente">Pendente</option>
+        </select>
+
+        <div class="acoes-rodape direita">
+            <a class="botao secundario" th:href="@{/agenda(data=${data})}">VOLTAR PARA AGENDA</a>
+            <button type="submit" class="botao sucesso">CONFIRMAR PAGAMENTO</button>
+        </div>
+    </form>
+</section>
+</div>
+</body>
+</html>

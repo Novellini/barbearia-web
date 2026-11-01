@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Barbeiro')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('barbeiros', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1 th:text="${barbeiro.id == null} ? 'Novo barbeiro' : 'Editar barbeiro'">Barbeiro</h1></div>
+    </header>
+
+    <form class="campos estreito" th:action="@{/barbeiros/salvar}" th:object="${barbeiro}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <label for="nome">Nome *</label>
+        <input id="nome" th:field="*{nome}" placeholder="Nome completo" th:errorclass="invalido" autofocus>
+        <p class="erro-campo" th:errors="*{nome}"></p>
+
+        <label for="telefone">Telefone *</label>
+        <input id="telefone" th:field="*{telefone}" placeholder="(11) 99999-0000" data-mascara="telefone" th:errorclass="invalido">
+        <p class="erro-campo" th:errors="*{telefone}"></p>
+
+        <label for="especialidade">Especialidade</label>
+        <input id="especialidade" th:field="*{especialidade}" placeholder="Ex.: Barba, degradê">
+
+        <label class="opcao"><input type="checkbox" th:field="*{ativo}"> Barbeiro ativo (aparece no agendamento)</label>
+
+        <div class="acoes-rodape direita">
+            <a class="botao secundario" th:href="@{/barbeiros}">CANCELAR</a>
+            <button type="submit" class="botao">SALVAR</button>
+        </div>
+    </form>
+
+    <form th:if="${barbeiro.id != null}" th:action="@{/barbeiros/{id}/excluir(id=${barbeiro.id})}" method="post"
+          class="zona-perigo" onsubmit="return confirm('Excluir este barbeiro?')">
+        <button class="botao secundario perigo">EXCLUIR BARBEIRO</button>
+    </form>
+</section>
+</div>
+</body>
+</html>

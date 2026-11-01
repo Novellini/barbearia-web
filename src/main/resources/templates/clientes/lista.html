@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Clientes')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('clientes', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1>Clientes</h1></div>
+        <a class="botao" th:href="@{/clientes/novo}">+ NOVO CLIENTE</a>
+    </header>
+
+    <form class="busca" th:action="@{/clientes}" method="get">
+        <label for="busca">Buscar cliente</label>
+        <div class="barra">
+            <input id="busca" name="busca" th:value="${busca}" placeholder="Nome, telefone ou email">
+            <button class="botao secundario">Buscar</button>
+            <a class="link" th:href="@{/clientes}" th:if="${busca}">Limpar</a>
+            <span class="sub" th:text="${busca} ? ${#lists.size(clientes)} + ' de ' + ${total} + ' encontrado(s)' : ${total} + ' cadastrado(s)'"></span>
+        </div>
+    </form>
+
+    <table class="tabela">
+        <thead><tr><th>Nome</th><th>Telefone</th><th>Email</th><th>Nascimento</th><th>Ação</th></tr></thead>
+        <tbody>
+        <tr th:each="c : ${clientes}">
+            <td th:text="${c.nome}"></td>
+            <td th:text="${c.telefone}"></td>
+            <td th:text="${c.email ?: '-'}"></td>
+            <td th:text="${c.dataNascimento} ? ${#temporals.format(c.dataNascimento, 'dd/MM/yyyy')} : '-'"></td>
+            <td><a class="link" th:href="@{/clientes/{id}/editar(id=${c.id})}">EDITAR</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(clientes)}"><td colspan="5" class="vazio">Nenhum cliente encontrado.</td></tr>
+        </tbody>
+    </table>
+</section>
+</div>
+</body>
+</html>

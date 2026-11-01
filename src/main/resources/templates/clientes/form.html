@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Cliente')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('clientes', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1 th:text="${cliente.id == null} ? 'Novo cliente' : 'Editar cliente'">Cliente</h1></div>
+    </header>
+
+    <form class="campos estreito" th:action="@{/clientes/salvar}" th:object="${cliente}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <label for="nome">Nome *</label>
+        <input id="nome" th:field="*{nome}" placeholder="Nome completo" th:errorclass="invalido" autofocus>
+        <p class="erro-campo" th:errors="*{nome}"></p>
+
+        <label for="telefone">Telefone *</label>
+        <input id="telefone" th:field="*{telefone}" placeholder="(11) 99999-0000" data-mascara="telefone" th:errorclass="invalido">
+        <p class="erro-campo" th:errors="*{telefone}"></p>
+
+        <label for="email">Email</label>
+        <input id="email" type="email" th:field="*{email}" placeholder="exemplo@email.com" th:errorclass="invalido">
+        <p class="erro-campo" th:errors="*{email}"></p>
+
+        <label for="dataNascimento">Data de nascimento</label>
+        <input id="dataNascimento" type="date" th:field="*{dataNascimento}" th:errorclass="invalido">
+        <p class="erro-campo" th:errors="*{dataNascimento}"></p>
+
+        <div class="acoes-rodape direita">
+            <a class="botao secundario" th:href="@{/clientes}">CANCELAR</a>
+            <button type="submit" class="botao">SALVAR</button>
+        </div>
+    </form>
+
+    <form th:if="${cliente.id != null}" th:action="@{/clientes/{id}/excluir(id=${cliente.id})}" method="post"
+          class="zona-perigo" onsubmit="return confirm('Excluir este cliente?')">
+        <button class="botao secundario perigo">EXCLUIR CLIENTE</button>
+    </form>
+</section>
+</div>
+</body>
+</html>

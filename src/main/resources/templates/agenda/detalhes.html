@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Detalhes do agendamento')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('agenda', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div>
+            <h1 th:text="'Agendamento das ' + ${#temporals.format(ag.dataHora, 'HH:mm')}">Agendamento</h1>
+            <p class="sub" th:text="${#temporals.format(ag.dataHora, 'dd/MM/yyyy')}"></p>
+        </div>
+        <a class="botao secundario" th:href="@{/agenda(data=${ag.dataHora.toLocalDate()})}">VOLTAR PARA AGENDA</a>
+    </header>
+
+    <dl class="detalhes">
+        <dt>Cliente</dt><dd th:text="${ag.cliente.nome + ' — ' + ag.cliente.telefone}"></dd>
+        <dt>Barbeiro</dt><dd th:text="${ag.barbeiro.nome}"></dd>
+        <dt>Serviços</dt><dd th:text="${ag.nomesServicos}"></dd>
+        <dt>Duração</dt><dd th:text="${ag.duracaoTotal + ' min'}"></dd>
+        <dt>Total</dt><dd th:text="${@fmt.moeda(ag.total)}"></dd>
+        <dt>Status</dt><dd><span class="etiqueta" th:classappend="${@fmt.cor(ag.status)}" th:text="${@fmt.status(ag.status)}"></span></dd>
+        <dt>Pagamento</dt>
+        <dd th:if="${ag.pagamento}">
+            <span class="etiqueta" th:classappend="${@fmt.cor(ag.pagamento.status)}" th:text="${@fmt.status(ag.pagamento.status)}"></span>
+            <span th:text="${@fmt.moeda(ag.pagamento.valorTotal) + ' · ' + @fmt.forma(ag.pagamento.formaPagamento)}"></span>
+        </dd>
+        <dd th:unless="${ag.pagamento}">Não registrado</dd>
+        <dt>Observação</dt><dd th:text="${ag.observacao ?: '-'}"></dd>
+    </dl>
+
+    <div class="acoes-grade">
+        <form th:action="@{/agenda/{id}/status(id=${ag.id})}" method="post" th:if="${ag.status == 'agendado'}">
+            <input type="hidden" name="status" value="confirmado">
+            <button class="botao sucesso">Confirmar</button>
+        </form>
+        <form th:action="@{/agenda/{id}/status(id=${ag.id})}" method="post" th:unless="${ag.encerrado}"
+              onsubmit="return confirm('Marcar este atendimento como concluído?')">
+            <input type="hidden" name="status" value="concluido">
+            <button class="botao secundario">Concluir</button>
+        </form>
+        <a class="botao" th:if="${!ag.pago and ag.status != 'cancelado'}"
+           th:href="@{/pagamentos(data=${ag.dataHora.toLocalDate()},agendamento=${ag.id})}">Registrar pagamento</a>
+        <form th:action="@{/agenda/{id}/status(id=${ag.id})}" method="post" th:unless="${ag.encerrado}"
+              onsubmit="return confirm('Cancelar este agendamento?')">
+            <input type="hidden" name="status" value="cancelado">
+            <button class="botao secundario perigo">Cancelar agendamento</button>
+        </form>
+        <form th:action="@{/agenda/{id}/excluir(id=${ag.id})}" method="post"
+              onsubmit="return confirm('Excluir definitivamente este agendamento? Essa ação não pode ser desfeita.')">
+            <button class="botao perigo">Excluir</button>
+        </form>
+    </div>
+</section>
+</div>
+</body>
+</html>

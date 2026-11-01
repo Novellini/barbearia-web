@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Dashboard')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('dashboard', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div><h1>Dashboard</h1><p class="sub">Resumo do dia</p></div>
+    </header>
+
+    <div class="indicadores">
+        <div class="indicador"><span>Agendamentos hoje</span><strong th:text="${totalAgendamentos}">0</strong></div>
+        <div class="indicador"><span>Clientes cadastrados</span><strong th:text="${totalClientes}">0</strong></div>
+        <div class="indicador"><span>Atendimentos concluídos</span><strong th:text="${totalConcluidos}">0</strong></div>
+    </div>
+
+    <h2>Próximos agendamentos</h2>
+    <a class="linha-agenda" th:each="a : ${proximos}" th:href="@{/agenda/{id}(id=${a.id})}">
+        <strong th:text="${#temporals.format(a.dataHora, 'HH:mm')}">09:00</strong>
+        <span th:text="${a.cliente.nome}">Cliente</span>
+        <span th:text="${a.nomesServicos}">Corte</span>
+        <span class="etiqueta" th:classappend="${@fmt.cor(a.status)}" th:text="${@fmt.status(a.status)}">Agendado</span>
+    </a>
+    <p class="vazio" th:if="${#lists.isEmpty(proximos)}">Nenhum agendamento pendente para o restante do dia.</p>
+
+    <div class="acoes-rodape">
+        <a class="botao" th:href="@{/agenda/novo}">NOVO AGENDAMENTO</a>
+        <a class="botao secundario" th:href="@{/agenda}">VER AGENDA COMPLETA</a>
+    </div>
+</section>
+</div>
+</body>
+</html>

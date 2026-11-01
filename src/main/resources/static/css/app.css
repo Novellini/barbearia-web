@@ -1,0 +1,132 @@
+/* Mesmas cores do sistema desktop (Estilo.java) */
+:root {
+    --fundo: #F5F6F8; --branco: #FFFFFF; --lateral: #1F2933; --lateral-hover: #323F4B;
+    --primaria: #2563EB; --primaria-esc: #1D4ED8; --perigo: #DC2626; --sucesso: #16A34A;
+    --alerta: #D97706; --borda: #D5D9E0; --texto: #111827; --suave: #6B7280;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--texto); background: var(--fundo); }
+a { color: var(--primaria); }
+h1 { font-size: 24px; margin: 0; }
+h2 { font-size: 16px; margin: 26px 0 12px; }
+.sub { color: var(--suave); margin: 4px 0 0; font-size: 13px; }
+
+/* Estrutura */
+.app { display: flex; min-height: 100vh; }
+.lateral { width: 210px; flex-shrink: 0; background: var(--lateral); padding: 24px 14px 20px; display: flex; flex-direction: column; }
+.marca { color: #fff; font-weight: 700; font-size: 20px; padding: 0 10px 24px; }
+.lateral nav { display: flex; flex-direction: column; gap: 6px; }
+.lateral nav a { color: #D1D5DB; text-decoration: none; font-weight: 600; padding: 11px 14px; border-radius: 8px; }
+.lateral nav a:hover { background: var(--lateral-hover); }
+.lateral nav a.ativo { background: var(--primaria); color: #fff; }
+.sair { margin-top: auto; }
+.sair button { background: none; border: 0; color: #9CA3AF; padding: 8px 14px; cursor: pointer; font: inherit; }
+.sair button:hover { color: #fff; }
+.area { flex: 1; padding: 20px; min-width: 0; }
+.conteudo { background: var(--branco); border: 1px solid var(--borda); border-radius: 10px; padding: 26px 30px; min-height: calc(100vh - 40px); }
+.cabecalho { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+
+/* Botões */
+.botao { display: inline-block; background: var(--primaria); color: #fff; border: 1px solid var(--primaria); border-radius: 8px;
+         padding: 9px 20px; font: 600 13px/1.4 inherit; font-family: inherit; text-decoration: none; cursor: pointer; text-align: center; }
+.botao:hover { background: var(--primaria-esc); }
+.botao.secundario { background: #fff; color: var(--texto); border-color: var(--texto); }
+.botao.secundario:hover { background: #F3F4F6; }
+.botao.sucesso { background: var(--sucesso); border-color: var(--sucesso); }
+.botao.perigo { background: var(--perigo); border-color: var(--perigo); }
+.botao.secundario.perigo { background: #fff; color: var(--perigo); border-color: var(--perigo); }
+.botao.largo { width: 100%; padding: 11px; margin-top: 18px; }
+.link { font-weight: 700; text-decoration: none; font-size: 13px; }
+.acoes-rodape { display: flex; gap: 10px; margin-top: 28px; }
+.acoes-rodape.direita { justify-content: flex-end; }
+.acoes-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-top: 26px; max-width: 640px; }
+.acoes-grade form, .acoes-grade .botao, .acoes-grade button { width: 100%; }
+
+/* Campos */
+label { display: block; font-weight: 600; margin: 14px 0 6px; }
+input, select, textarea { width: 100%; font: inherit; color: var(--texto); background: #fff; border: 1px solid var(--borda); border-radius: 8px; padding: 8px 11px; min-height: 38px; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primaria); box-shadow: 0 0 0 3px #DBEAFE; }
+input.invalido, select.invalido { border-color: var(--perigo); }
+input[type=checkbox], input[type=radio] { width: auto; min-height: 0; }
+.erro-campo { color: var(--perigo); font-size: 12px; margin: 4px 0 0; }
+.erro-campo:empty { display: none; }
+.dica { color: var(--suave); font-size: 12px; margin: 4px 0 0; }
+.campos.estreito { max-width: 560px; }
+.linha-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.opcao { display: flex; align-items: center; gap: 8px; font-weight: 400; margin: 14px 0 0; cursor: pointer; }
+.lista-servicos { border: 1px solid var(--borda); border-radius: 8px; padding: 4px 12px 10px; max-height: 170px; overflow-y: auto; }
+.lista-servicos .opcao { margin-top: 8px; }
+.lista-servicos small { color: var(--suave); margin-left: auto; }
+.barra { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.barra label { margin: 0; }
+.barra input { width: auto; }
+.busca .barra input { width: 380px; max-width: 100%; }
+.zona-perigo { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--borda); max-width: 560px; }
+
+/* Avisos */
+.aviso { padding: 11px 14px; border-radius: 8px; margin-bottom: 14px; font-weight: 500; }
+.aviso.sucesso { background: #DCFCE7; color: #166534; }
+.aviso.erro { background: #FEE2E2; color: #991B1B; }
+.vazio { color: var(--suave); padding: 18px 2px; }
+
+/* Etiquetas de status */
+.etiqueta { display: inline-block; font-weight: 700; font-size: 12px; padding: 2px 10px; border-radius: 999px; }
+.etiqueta.sucesso { background: #DCFCE7; color: #15803D; }
+.etiqueta.alerta { background: #FEF3C7; color: #B45309; }
+.etiqueta.perigo { background: #FEE2E2; color: #B91C1C; }
+.etiqueta.neutro { background: #F3F4F6; color: var(--suave); }
+
+/* Tabelas */
+.tabela { width: 100%; border-collapse: collapse; border: 1px solid var(--borda); }
+.tabela th { background: #F3F4F6; color: var(--suave); text-align: left; padding: 10px 12px; font-size: 13px; }
+.tabela td { padding: 11px 12px; border-top: 1px solid #ECEEF2; }
+.tabela tbody tr:hover td { background: #F9FAFB; }
+
+/* Dashboard */
+.indicadores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.indicador { background: #F3F4F6; border: 1px solid var(--borda); border-radius: 10px; padding: 14px 18px; }
+.indicador span { color: var(--suave); font-size: 13px; }
+.indicador strong { display: block; font-size: 30px; }
+.linha-agenda { display: grid; grid-template-columns: 80px 1fr 1fr 120px; align-items: center; gap: 12px; border: 1px solid var(--borda);
+                border-radius: 8px; padding: 11px 16px; margin-bottom: 8px; color: var(--texto); text-decoration: none; }
+.linha-agenda:hover { border-color: var(--primaria); }
+
+/* Novo agendamento */
+.duas-colunas { display: grid; grid-template-columns: 3fr 2fr; gap: 28px; align-items: start; }
+.resumo { background: #F9FAFB; border: 1px solid var(--borda); border-radius: 10px; padding: 18px 22px; position: sticky; top: 20px; }
+.resumo h2 { margin-top: 0; }
+.resumo dl, .detalhes { display: grid; grid-template-columns: 110px 1fr; gap: 10px 12px; margin: 0; }
+.resumo dt, .detalhes dt { font-weight: 600; }
+.resumo dd, .detalhes dd { margin: 0; }
+.resumo .total { display: flex; justify-content: space-between; border-top: 1px solid var(--borda); margin-top: 18px; padding-top: 12px; font-size: 16px; font-weight: 600; }
+.resumo .total strong { font-size: 19px; }
+.detalhes { grid-template-columns: 140px 1fr; max-width: 640px; }
+
+/* Pagamento */
+.formas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.forma { margin: 0; }
+.forma input { position: absolute; opacity: 0; }
+.forma span { display: block; text-align: center; border: 1px solid var(--borda); border-radius: 8px; padding: 10px 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+.forma input:checked + span { border: 2px solid var(--primaria); background: #DBEAFE; color: var(--primaria-esc); padding: 9px 5px; }
+.forma input:focus-visible + span { box-shadow: 0 0 0 3px #DBEAFE; }
+
+/* Login (Tela 1) */
+.tela-login { display: grid; place-items: center; min-height: 100vh; padding: 16px; }
+.cartao-login { background: #fff; border: 1px solid var(--borda); border-radius: 10px; padding: 36px 40px 30px; width: 400px; max-width: 100%; }
+.cartao-login h1 { text-align: center; font-size: 28px; }
+.cartao-login .sub { text-align: center; margin-bottom: 18px; }
+.rodape-login { color: var(--suave); font-size: 12px; text-align: center; margin: 18px 0 0; }
+
+/* Telas estreitas */
+@media (max-width: 860px) {
+    .app { flex-direction: column; }
+    .lateral { width: auto; padding: 14px; }
+    .lateral nav { flex-direction: row; flex-wrap: wrap; }
+    .marca { padding-bottom: 10px; }
+    .sair { margin-top: 8px; }
+    .area { padding: 12px; }
+    .conteudo { padding: 18px 16px; min-height: 0; }
+    .indicadores, .duas-colunas, .linha-campos { grid-template-columns: 1fr; }
+    .formas { grid-template-columns: 1fr 1fr; }
+    .tabela { display: block; overflow-x: auto; }
+}
