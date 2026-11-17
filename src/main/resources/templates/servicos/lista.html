@@ -19,20 +19,22 @@
         </div>
     </form>
 
-    <table class="tabela">
-        <thead><tr><th>Nome</th><th>Descrição</th><th>Preço</th><th>Duração</th><th>Ativo</th><th>Ação</th></tr></thead>
-        <tbody>
-        <tr th:each="s : ${servicos}">
-            <td th:text="${s.nome}"></td>
-            <td th:text="${s.descricao ?: '-'}"></td>
-            <td th:text="${@fmt.moeda(s.preco)}"></td>
-            <td th:text="${s.duracaoMin + ' min'}"></td>
-            <td><span class="etiqueta" th:classappend="${s.ativo} ? 'sucesso' : 'neutro'" th:text="${s.ativo} ? 'Sim' : 'Não'"></span></td>
-            <td><a class="link" th:href="@{/servicos/{id}/editar(id=${s.id})}">EDITAR</a></td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(servicos)}"><td colspan="6" class="vazio">Nenhum serviço encontrado.</td></tr>
-        </tbody>
-    </table>
+    <div class="rolagem-tabela" tabindex="0" role="region" aria-label="Servicos">
+        <table class="tabela">
+            <thead><tr><th>Nome</th><th>Descrição</th><th>Preço</th><th>Duração</th><th>Ativo</th><th>Ação</th></tr></thead>
+            <tbody>
+            <tr th:each="s : ${servicos}">
+                <td th:text="${s.nome}"></td>
+                <td th:text="${s.descricao ?: '-'}"></td>
+                <td th:text="${@fmt.moeda(s.preco)}"></td>
+                <td th:text="${s.duracaoMin + ' min'}"></td>
+                <td><span class="etiqueta" th:classappend="${s.ativo} ? 'sucesso' : 'neutro'" th:text="${s.ativo} ? 'Sim' : 'Não'"></span></td>
+                <td><a class="link" th:href="@{/servicos/{id}/editar(id=${s.id})}">EDITAR</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(servicos)}"><td colspan="6" class="vazio">Nenhum serviço encontrado.</td></tr>
+            </tbody>
+        </table>
+    </div>
 </section>
 </div>
 </body>

@@ -34,23 +34,38 @@ if (form) {
         document.getElementById('res-horario').textContent = horario.value || '-';
     }
 
+    let consultaAtual = 0;
     async function carregarHorarios() {
+        const consulta = ++consultaAtual;
         const anterior = horario.value;
-        horario.innerHTML = '';
-        if (!barbeiro.value || !data.value) {
-            horario.add(new Option(barbeiro.value ? 'Informe a data' : 'Selecione o barbeiro', ''));
+        const selecionados = [...servicos].filter(s => s.checked);
+        horario.replaceChildren();
+        if (!barbeiro.value || !data.value || !selecionados.length) {
+            const mensagem = !barbeiro.value ? 'Selecione o barbeiro'
+                : !data.value ? 'Informe a data' : 'Selecione os serviços';
+            horario.add(new Option(mensagem, ''));
             atualizarResumo();
             return;
         }
-        const url = form.dataset.horarios + '?barbeiroId=' + barbeiro.value + '&data=' + data.value;
-        const livres = await (await fetch(url)).json();
-        horario.add(new Option(livres.length ? 'Selecionar horário' : 'Sem horários livres nesta data', ''));
-        livres.forEach(h => horario.add(new Option(h, h, false, h === anterior)));
+        horario.add(new Option('Consultando horários...', ''));
+        atualizarResumo();
+        const params = new URLSearchParams({barbeiroId: barbeiro.value, data: data.value});
+        selecionados.forEach(s => params.append('servicoIds', s.value));
+        try {
+            const resposta = await fetch(form.dataset.horarios + '?' + params);
+            if (!resposta.ok) throw new Error('Falha na consulta');
+            const livres = await resposta.json();
+            if (consulta !== consultaAtual) return;
+            horario.replaceChildren(new Option(livres.length ? 'Selecionar horário' : 'Sem horários livres nesta data', ''));
+            livres.forEach(h => horario.add(new Option(h, h, false, h === anterior)));
+        } catch (erro) {
+            if (consulta !== consultaAtual) return;
+            horario.replaceChildren(new Option('Não foi possível consultar horários', ''));
+        }
         atualizarResumo();
     }
 
     [cliente, horario].forEach(c => c.addEventListener('change', atualizarResumo));
-    servicos.forEach(s => s.addEventListener('change', atualizarResumo));
-    [barbeiro, data].forEach(c => c.addEventListener('change', carregarHorarios));
+    [...servicos, barbeiro, data].forEach(c => c.addEventListener('change', carregarHorarios));
     atualizarResumo();
 }

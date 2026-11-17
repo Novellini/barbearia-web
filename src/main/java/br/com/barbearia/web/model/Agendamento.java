@@ -33,6 +33,9 @@ public class Agendamento {
     @Column(name = "data_hora")
     private LocalDateTime dataHora;
 
+    @Column(name = "duracao_reservada")
+    private Integer duracaoReservada;
+
     private String status = AGENDADO;
 
     private String observacao;
@@ -57,12 +60,16 @@ public class Agendamento {
     }
 
     public int getDuracaoTotal() {
+        if (duracaoReservada != null) return duracaoReservada;
         return itens.stream().mapToInt(i -> i.getServico().getDuracaoMin()).sum();
     }
 
     public boolean isPago() { return pagamento != null && "pago".equalsIgnoreCase(pagamento.getStatus()); }
 
     public boolean isEncerrado() { return CONCLUIDO.equals(status) || CANCELADO.equals(status); }
+
+    public int minutosReservados() { return duracaoReservada == null ? 30 : duracaoReservada; }
+    public void setDuracaoReservada(int minutos) { this.duracaoReservada = minutos; }
 
     public Integer getId() { return id; }
     public Cliente getCliente() { return cliente; }

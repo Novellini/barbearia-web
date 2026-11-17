@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<!-- Estrutura comum: menu lateral + área de conteúdo (Telas 2 a 6 do wireframe) -->
 <head th:fragment="cabeca(titulo)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,13 +11,15 @@
 <div th:fragment="pagina(ativo, conteudo)" class="app">
     <aside class="lateral">
         <div class="marca">BARBEARIA</div>
-        <nav>
+        <nav aria-label="Menu principal">
             <a th:href="@{/}" th:classappend="${ativo == 'dashboard'} ? 'ativo'">Dashboard</a>
             <a th:href="@{/agenda}" th:classappend="${ativo == 'agenda'} ? 'ativo'">Agenda</a>
             <a th:href="@{/clientes}" th:classappend="${ativo == 'clientes'} ? 'ativo'">Clientes</a>
             <a th:href="@{/servicos}" th:classappend="${ativo == 'servicos'} ? 'ativo'">Serviços</a>
             <a th:href="@{/barbeiros}" th:classappend="${ativo == 'barbeiros'} ? 'ativo'">Barbeiros</a>
             <a th:href="@{/pagamentos}" th:classappend="${ativo == 'pagamentos'} ? 'ativo'">Pagamentos</a>
+            <a th:href="@{/relatorios}" th:classappend="${ativo == 'relatorios'} ? 'ativo'"
+               th:attr="aria-current=${ativo == 'relatorios'} ? 'page' : null">Relatórios</a>
         </nav>
         <form th:action="@{/logout}" method="post" class="sair">
             <button type="submit">Sair</button>

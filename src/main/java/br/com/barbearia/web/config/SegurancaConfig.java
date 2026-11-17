@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-// Acesso restrito ao usuário responsável pelo sistema (Tela 1 do wireframe)
 @Configuration
 public class SegurancaConfig {
 

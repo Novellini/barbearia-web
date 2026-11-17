@@ -23,7 +23,6 @@ public class PaginaController {
         return "login";
     }
 
-    // Tela 2 do wireframe: resumo do dia
     @GetMapping("/")
     public String dashboard(Model model) {
         LocalDate hoje = LocalDate.now();

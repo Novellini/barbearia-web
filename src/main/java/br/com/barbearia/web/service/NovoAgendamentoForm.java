@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
-// Dados do formulário "Novo agendamento"
 public class NovoAgendamentoForm {
 
     @NotNull(message = "Selecione um cliente")

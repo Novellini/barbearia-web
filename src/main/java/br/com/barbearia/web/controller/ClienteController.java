@@ -10,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-// Tela 5 do wireframe: clientes
 @Controller
 @RequestMapping("/clientes")
 public class ClienteController {

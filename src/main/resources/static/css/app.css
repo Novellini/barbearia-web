@@ -28,7 +28,7 @@ h2 { font-size: 16px; margin: 26px 0 12px; }
 
 /* Botões */
 .botao { display: inline-block; background: var(--primaria); color: #fff; border: 1px solid var(--primaria); border-radius: 8px;
-         padding: 9px 20px; font: 600 13px/1.4 inherit; font-family: inherit; text-decoration: none; cursor: pointer; text-align: center; }
+         padding: 9px 20px; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; text-align: center; }
 .botao:hover { background: var(--primaria-esc); }
 .botao.secundario { background: #fff; color: var(--texto); border-color: var(--texto); }
 .botao.secundario:hover { background: #F3F4F6; }
@@ -111,22 +111,58 @@ input[type=checkbox], input[type=radio] { width: auto; min-height: 0; }
 .forma input:focus-visible + span { box-shadow: 0 0 0 3px #DBEAFE; }
 
 /* Login (Tela 1) */
-.tela-login { display: grid; place-items: center; min-height: 100vh; padding: 16px; }
+.tela-login { display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; min-height: 100vh; padding: 16px; }
 .cartao-login { background: #fff; border: 1px solid var(--borda); border-radius: 10px; padding: 36px 40px 30px; width: 400px; max-width: 100%; }
 .cartao-login h1 { text-align: center; font-size: 28px; }
 .cartao-login .sub { text-align: center; margin-bottom: 18px; }
 .rodape-login { color: var(--suave); font-size: 12px; text-align: center; margin: 18px 0 0; }
 
+.rolagem-tabela { max-width: 100%; overflow-x: auto; }
+.rolagem-tabela th { white-space: nowrap; }
+.rolagem-tabela td, .linha-agenda, .resumo dd, .detalhes dd { overflow-wrap: anywhere; }
+.rolagem-tabela td { min-width: 88px; }
+.rolagem-tabela:focus-visible { outline: 2px solid var(--primaria); outline-offset: 2px; }
+.cabecalho, .acoes-rodape { flex-wrap: wrap; }
+.cabecalho > *, .linha-campos > *, .duas-colunas > * { min-width: 0; }
+input, select, textarea { min-width: 0; max-width: 100%; }
+.acoes-grade { grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); }
+
+.filtro-relatorio { align-items: end; }
+.filtro-relatorio label { margin-bottom: 5px; }
+.indicadores.relatorio { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.indicadores.relatorio strong { font-size: clamp(18px, 2vw, 27px); overflow-wrap: anywhere; }
+
 /* Telas estreitas */
-@media (max-width: 860px) {
+@media (max-width: 900px) {
     .app { flex-direction: column; }
-    .lateral { width: auto; padding: 14px; }
-    .lateral nav { flex-direction: row; flex-wrap: wrap; }
-    .marca { padding-bottom: 10px; }
-    .sair { margin-top: 8px; }
+    .lateral { width: auto; padding: 10px 12px; display: grid; grid-template-columns: 1fr auto; }
+    .marca { padding: 4px 8px; align-self: center; }
+    .lateral nav { grid-row: 2; grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; gap: 4px; }
+    .lateral nav a, .sair button { padding: 10px; min-height: 44px; }
+    .sair { grid-column: 2; grid-row: 1; margin: 0; }
     .area { padding: 12px; }
     .conteudo { padding: 18px 16px; min-height: 0; }
-    .indicadores, .duas-colunas, .linha-campos { grid-template-columns: 1fr; }
-    .formas { grid-template-columns: 1fr 1fr; }
-    .tabela { display: block; overflow-x: auto; }
+}
+
+@media (max-width: 600px) {
+    .area { padding: 8px; }
+    .conteudo { padding: 16px 12px; }
+    .cabecalho { gap: 10px; }
+    .cabecalho > .botao, .acoes-rodape > *, .filtro-relatorio > .botao { width: 100%; }
+    .indicadores, .indicadores.relatorio { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .indicador { padding: 10px; }
+    .indicador strong { font-size: 23px; }
+    .duas-colunas, .linha-campos { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .resumo { position: static; padding: 14px; }
+    .resumo dl, .detalhes { grid-template-columns: minmax(78px, 34%) minmax(0, 1fr); }
+    .formas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .forma span { min-height: 44px; }
+    .linha-agenda { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 10px; gap: 6px; }
+    .linha-agenda .etiqueta { justify-self: start; }
+    .filtro-relatorio > div { flex: 1 1 130px; min-width: 0; }
+    .filtro-relatorio input, .busca .barra input { width: 100%; }
+    .botao, input, select, textarea { min-height: 44px; }
+    input, select, textarea { font-size: 16px; }
+    input[type=checkbox], input[type=radio] { min-height: 0; }
+    .cartao-login { padding: 24px; }
 }

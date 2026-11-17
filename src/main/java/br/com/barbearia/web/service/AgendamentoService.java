@@ -5,18 +5,12 @@ import br.com.barbearia.web.repository.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AgendamentoService {
-
-    // Mesma grade de horários do desktop: 08:00 às 19:30, de 30 em 30 minutos
-    private static final LocalTime ABERTURA = LocalTime.of(8, 0);
-    private static final LocalTime FECHAMENTO = LocalTime.of(20, 0);
-    private static final int INTERVALO_MIN = 30;
 
     public static final Map<String, String> FORMAS_PAGAMENTO = new LinkedHashMap<>();
     static {
@@ -66,40 +60,68 @@ public class AgendamentoService {
         return agendamentos.findById(id).orElseThrow(() -> new NoSuchElementException("Agendamento não encontrado"));
     }
 
-    public List<String> horariosLivres(Integer idBarbeiro, LocalDate data) {
-        if (idBarbeiro == null || data == null) return List.of();
-        Set<LocalTime> ocupados = new HashSet<>();
-        for (Agendamento a : agendamentos.findByBarbeiroIdAndDataHoraBetween(idBarbeiro,
-                data.atStartOfDay(), data.plusDays(1).atStartOfDay())) {
-            ocupados.add(a.getDataHora().toLocalTime());
+    @Transactional(readOnly = true)
+    public List<String> horariosLivres(Integer idBarbeiro, LocalDate data, List<Integer> idsServicos) {
+        if (idBarbeiro == null || data == null || data.isBefore(LocalDate.now()) || data.getYear() > 9998
+                || barbeiros.findById(idBarbeiro).filter(Barbeiro::isAtivo).isEmpty()) return List.of();
+        try {
+            return GradeHorarios.livres(data, duracao(selecionarServicos(idsServicos)), reservas(idBarbeiro, data));
+        } catch (IllegalArgumentException ex) {
+            return List.of();
         }
-        LocalDateTime agora = LocalDateTime.now();
-        List<String> livres = new ArrayList<>();
-        for (LocalTime h = ABERTURA; h.isBefore(FECHAMENTO); h = h.plusMinutes(INTERVALO_MIN)) {
-            if (!ocupados.contains(h) && !LocalDateTime.of(data, h).isBefore(agora)) livres.add(h.toString());
-        }
-        return livres;
     }
 
-    // Lança IllegalArgumentException com a mensagem para o usuário quando algo não é válido
+    private List<Servico> selecionarServicos(List<Integer> ids) {
+        if (ids == null || ids.isEmpty() || ids.stream().anyMatch(Objects::isNull) || new HashSet<>(ids).size() != ids.size()) {
+            throw new IllegalArgumentException("Selecione serviços válidos.");
+        }
+        List<Servico> selecionados = servicos.findAllById(ids);
+        if (selecionados.size() != ids.size()
+                || selecionados.stream().anyMatch(s -> !s.isAtivo() || s.getDuracaoMin() <= 0)) {
+            throw new IllegalArgumentException("Um dos serviços selecionados não está disponível.");
+        }
+        return selecionados;
+    }
+
+    private int duracao(List<Servico> selecionados) {
+        return selecionados.stream().mapToInt(Servico::getDuracaoMin).sum();
+    }
+
+    private List<GradeHorarios.Reserva> reservas(Integer barbeiro, LocalDate data) {
+        return agendamentos.buscarReservas(barbeiro, data.atStartOfDay(), data.plusDays(1).atStartOfDay())
+                .stream().map(a -> new GradeHorarios.Reserva(a.getDataHora(), a.minutosReservados())).toList();
+    }
+
     @Transactional
     public Agendamento criar(NovoAgendamentoForm form) {
-        LocalDateTime dataHora = LocalDateTime.of(form.getData(), form.getHorario());
-        if (dataHora.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Esse horário já passou. Escolha outro.");
-        }
-        if (agendamentos.existsByBarbeiroIdAndDataHora(form.getBarbeiroId(), dataHora)) {
-            throw new IllegalArgumentException("Esse barbeiro já tem um agendamento neste horário. Escolha outro.");
+        if (form.getData().getYear() > 9998) throw new IllegalArgumentException("Informe uma data válida.");
+        // O desktop também bloqueia esta linha antes de consultar e gravar.
+        Barbeiro barbeiro = barbeiros.bloquearParaAgendar(form.getBarbeiroId()).filter(Barbeiro::isAtivo)
+                .orElseThrow(() -> new IllegalArgumentException("Selecione um barbeiro ativo."));
+        List<Servico> selecionados = selecionarServicos(form.getServicoIds());
+        int minutos = duracao(selecionados);
+        LocalDateTime inicio = LocalDateTime.of(form.getData(), form.getHorario());
+        if (!GradeHorarios.cabe(inicio, minutos, LocalDateTime.now(), reservas(barbeiro.getId(), form.getData()))) {
+            throw new IllegalArgumentException("O atendimento não cabe nesse horário. Escolha outro.");
         }
         Agendamento a = new Agendamento();
         a.setCliente(clientes.findById(form.getClienteId())
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado")));
-        a.setBarbeiro(barbeiros.findById(form.getBarbeiroId())
-                .orElseThrow(() -> new IllegalArgumentException("Barbeiro não encontrado")));
-        a.setDataHora(dataHora);
+        a.setBarbeiro(barbeiro);
+        a.setDataHora(inicio);
+        a.setDuracaoReservada(minutos);
         a.setObservacao(form.getObservacao());
-        for (Servico s : servicos.findAllById(form.getServicoIds())) a.adicionarServico(s);
+        for (Servico s : selecionados) a.adicionarServico(s);
         return agendamentos.save(a);
+    }
+
+    private Agendamento buscarParaAlterar(Integer id) {
+        Agendamento a = agendamentos.bloquearPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado."));
+        if (Agendamento.CANCELADO.equals(a.getStatus())) {
+            throw new IllegalArgumentException("Este agendamento foi cancelado.");
+        }
+        return a;
     }
 
     @Transactional
@@ -107,7 +129,7 @@ public class AgendamentoService {
         if (!List.of(Agendamento.CONFIRMADO, Agendamento.CONCLUIDO, Agendamento.CANCELADO).contains(status)) {
             throw new IllegalArgumentException("Status inválido");
         }
-        buscar(id).setStatus(status);
+        buscarParaAlterar(id).setStatus(status);
     }
 
     @Transactional
@@ -127,7 +149,7 @@ public class AgendamentoService {
     public void registrarPagamento(Integer idAgendamento, BigDecimal valor, String forma, boolean pago) {
         if (!FORMAS_PAGAMENTO.containsKey(forma)) throw new IllegalArgumentException("Escolha a forma de pagamento");
         if (valor == null || valor.signum() <= 0) throw new IllegalArgumentException("Informe um valor maior que zero");
-        Agendamento a = buscar(idAgendamento);
+        Agendamento a = buscarParaAlterar(idAgendamento);
         if (a.isPago()) throw new IllegalArgumentException("Esse atendimento já está pago");
         Pagamento p = pagamentos.findByAgendamentoId(idAgendamento).orElseGet(Pagamento::new);
         p.setAgendamento(a);

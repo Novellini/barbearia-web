@@ -24,7 +24,6 @@ public class Formatos {
         };
     }
 
-    // Classe CSS da etiqueta de status
     public String cor(String status) {
         if (status == null) return "neutro";
         return switch (status.toLowerCase()) {

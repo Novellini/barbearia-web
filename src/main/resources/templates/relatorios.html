@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: cabeca('Relatórios')}"></head>
+<body>
+<div th:replace="~{layout :: pagina('relatorios', ~{::section})}">
+<section class="conteudo">
+    <header class="cabecalho">
+        <div>
+            <h1>Relatórios</h1>
+            <p class="sub">Consulte os atendimentos e as vendas da barbearia.</p>
+        </div>
+    </header>
+    <form class="barra filtro-relatorio" th:action="@{/relatorios}" method="get">
+        <div><label for="inicio">De</label><input id="inicio" name="inicio" type="date" th:value="${inicio}" required></div>
+        <div><label for="fim">Até</label><input id="fim" name="fim" type="date" th:value="${fim}" required></div>
+        <button type="submit" class="botao">Consultar</button>
+    </form>
+
+    <div th:if="${relatorio != null}">
+        <div class="indicadores relatorio">
+            <div class="indicador"><span>Na agenda</span><strong th:text="${relatorio.agendados()}"></strong></div>
+            <div class="indicador"><span>Concluídos</span><strong th:text="${relatorio.concluidos()}"></strong></div>
+            <div class="indicador"><span>Cancelados</span><strong th:text="${relatorio.cancelados()}"></strong></div>
+            <div class="indicador"><span>Recebido</span><strong th:text="${@fmt.moeda(relatorio.recebido())}"></strong></div>
+        </div>
+        <h2 id="titulo-fluxo">Movimento por dia</h2>
+        <p class="sub">A agenda usa a data do atendimento. O valor recebido usa a data do pagamento.</p>
+        <div class="rolagem-tabela" tabindex="0" role="region" aria-labelledby="titulo-fluxo">
+            <table class="tabela">
+                <thead><tr><th>Data</th><th>Na agenda</th><th>Concluídos</th><th>Cancelados</th><th>Recebido</th></tr></thead>
+                <tbody>
+                <tr th:each="dia : ${relatorio.dias()}">
+                    <td th:text="${#temporals.format(dia.data(), 'dd/MM/yyyy')}"></td>
+                    <td th:text="${dia.agendados()}"></td><td th:text="${dia.concluidos()}"></td>
+                    <td th:text="${dia.cancelados()}"></td><td th:text="${@fmt.moeda(dia.recebido())}"></td>
+                </tr>
+                <tr th:if="${relatorio.dias().isEmpty()}"><td colspan="5">Sem movimento no período.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <h2 id="titulo-barbeiros">Ranking de barbeiros</h2>
+        <p class="sub">A lista começa pelo barbeiro que mais vendeu serviços no período.</p>
+        <div class="rolagem-tabela" tabindex="0" role="region" aria-labelledby="titulo-barbeiros">
+            <table class="tabela">
+                <thead><tr><th>Barbeiro</th><th>Serviços vendidos</th><th>Atendimentos pagos</th><th>Recebido</th></tr></thead>
+                <tbody>
+                <tr th:each="barbeiro : ${relatorio.barbeiros()}">
+                    <td th:text="${barbeiro.nome()}"></td><td th:text="${barbeiro.quantidade()}"></td>
+                    <td th:text="${barbeiro.atendimentos()}"></td><td th:text="${@fmt.moeda(barbeiro.recebido())}"></td>
+                </tr>
+                <tr th:if="${relatorio.barbeiros().isEmpty()}"><td colspan="4">Sem pagamentos no período.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <h2 id="titulo-servicos">Serviços mais vendidos</h2>
+        <p class="sub">Os valores usam os preços registrados nos agendamentos.</p>
+        <div class="rolagem-tabela" tabindex="0" role="region" aria-labelledby="titulo-servicos">
+            <table class="tabela">
+                <thead><tr><th>Serviço</th><th>Quantidade vendida</th><th>Valor dos serviços</th></tr></thead>
+                <tbody>
+                <tr th:each="servico : ${relatorio.servicos()}">
+                    <td th:text="${servico.nome()}"></td><td th:text="${servico.quantidade()}"></td>
+                    <td th:text="${@fmt.moeda(servico.valor())}"></td>
+                </tr>
+                <tr th:if="${relatorio.servicos().isEmpty()}"><td colspan="3">Sem serviços vendidos no período.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</div>
+</body>
+</html>

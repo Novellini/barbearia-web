@@ -19,19 +19,21 @@
         </div>
     </form>
 
-    <table class="tabela">
-        <thead><tr><th>Nome</th><th>Telefone</th><th>Email</th><th>Nascimento</th><th>Ação</th></tr></thead>
-        <tbody>
-        <tr th:each="c : ${clientes}">
-            <td th:text="${c.nome}"></td>
-            <td th:text="${c.telefone}"></td>
-            <td th:text="${c.email ?: '-'}"></td>
-            <td th:text="${c.dataNascimento} ? ${#temporals.format(c.dataNascimento, 'dd/MM/yyyy')} : '-'"></td>
-            <td><a class="link" th:href="@{/clientes/{id}/editar(id=${c.id})}">EDITAR</a></td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(clientes)}"><td colspan="5" class="vazio">Nenhum cliente encontrado.</td></tr>
-        </tbody>
-    </table>
+    <div class="rolagem-tabela" tabindex="0" role="region" aria-label="Clientes">
+        <table class="tabela">
+            <thead><tr><th>Nome</th><th>Telefone</th><th>Email</th><th>Nascimento</th><th>Ação</th></tr></thead>
+            <tbody>
+            <tr th:each="c : ${clientes}">
+                <td th:text="${c.nome}"></td>
+                <td th:text="${c.telefone}"></td>
+                <td th:text="${c.email ?: '-'}"></td>
+                <td th:text="${c.dataNascimento} ? ${#temporals.format(c.dataNascimento, 'dd/MM/yyyy')} : '-'"></td>
+                <td><a class="link" th:href="@{/clientes/{id}/editar(id=${c.id})}">EDITAR</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(clientes)}"><td colspan="5" class="vazio">Nenhum cliente encontrado.</td></tr>
+            </tbody>
+        </table>
+    </div>
 </section>
 </div>
 </body>

@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-// Tela 6 do wireframe: registrar pagamento
 @Controller
 @RequestMapping("/pagamentos")
 public class PagamentoController {

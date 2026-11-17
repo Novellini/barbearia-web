@@ -33,7 +33,9 @@ CREATE TABLE `agendamento` (
   `observacao` text COLLATE utf8mb4_unicode_ci,
   `criado_em` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_agendamento`),
-  UNIQUE KEY `uq_barbeiro_horario` (`id_barbeiro`,`data_hora`),
+  `duracao_reservada` int DEFAULT NULL,
+  `horario_ativo` datetime GENERATED ALWAYS AS (CASE WHEN `status` <> 'cancelado' THEN `data_hora` ELSE NULL END) STORED,
+  UNIQUE KEY `uq_barbeiro_horario` (`id_barbeiro`,`horario_ativo`),
   KEY `fk_agend_cliente` (`id_cliente`),
   CONSTRAINT `fk_agend_barbeiro` FOREIGN KEY (`id_barbeiro`) REFERENCES `barbeiro` (`id_barbeiro`),
   CONSTRAINT `fk_agend_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`)

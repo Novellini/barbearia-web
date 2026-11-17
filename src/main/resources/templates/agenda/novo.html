@@ -49,10 +49,10 @@
                     </div>
                     <div>
                         <label for="horario">Horário disponível</label>
-                        <select id="horario" name="horario" th:attr="data-selecionado=${form.horario}">
-                            <option value="" th:text="${form.barbeiroId == null} ? 'Selecione o barbeiro' : 'Selecionar horário'"></option>
+                        <select id="horario" name="horario" required>
+                            <option value="" th:text="${form.barbeiroId == null ? 'Selecione o barbeiro' : (#lists.isEmpty(form.servicoIds) ? 'Selecione os serviços' : (#lists.isEmpty(horarios) ? 'Sem horários livres nesta data' : 'Selecionar horário'))}"></option>
                             <option th:each="h : ${horarios}" th:value="${h}" th:text="${h}"
-                                    th:selected="${form.horario != null and #strings.startsWith(form.horario.toString(), h)}"></option>
+                                    th:selected="${form.horario != null and form.horario.toString() == h}"></option>
                         </select>
                         <p class="erro-campo" th:errors="*{horario}"></p>
                     </div>

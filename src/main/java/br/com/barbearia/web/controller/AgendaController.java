@@ -33,7 +33,6 @@ public class AgendaController {
         this.servicos = servicos;
     }
 
-    // Tela 3 do wireframe: agenda do dia
     @GetMapping
     public String lista(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
                         Model model) {
@@ -44,7 +43,6 @@ public class AgendaController {
         return "agenda/lista";
     }
 
-    // Tela 4 do wireframe: novo agendamento
     @GetMapping("/novo")
     public String novo(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
                        Model model) {
@@ -72,7 +70,7 @@ public class AgendaController {
         model.addAttribute("clientes", clientes.findAllByOrderByNome());
         model.addAttribute("barbeiros", barbeiros.findByAtivoTrueOrderByNome());
         model.addAttribute("servicos", servicos.findByAtivoTrueOrderByNome());
-        model.addAttribute("horarios", service.horariosLivres(form.getBarbeiroId(), form.getData()));
+        model.addAttribute("horarios", service.horariosLivres(form.getBarbeiroId(), form.getData(), form.getServicoIds()));
         return "agenda/novo";
     }
 
@@ -80,8 +78,9 @@ public class AgendaController {
     @GetMapping("/horarios")
     @ResponseBody
     public List<String> horarios(@RequestParam(required = false) Integer barbeiroId,
-                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
-        return service.horariosLivres(barbeiroId, data);
+                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+                                 @RequestParam(required = false) List<Integer> servicoIds) {
+        return service.horariosLivres(barbeiroId, data, servicoIds);
     }
 
     @GetMapping("/{id}")
@@ -92,8 +91,12 @@ public class AgendaController {
 
     @PostMapping("/{id}/status")
     public String status(@PathVariable Integer id, @RequestParam String status, RedirectAttributes redirect) {
-        service.mudarStatus(id, status);
-        redirect.addFlashAttribute("sucesso", "Status atualizado.");
+        try {
+            service.mudarStatus(id, status);
+            redirect.addFlashAttribute("sucesso", "Status atualizado.");
+        } catch (IllegalArgumentException ex) {
+            redirect.addFlashAttribute("erro", ex.getMessage());
+        }
         return "redirect:/agenda/" + id;
     }
 

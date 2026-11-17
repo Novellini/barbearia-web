@@ -18,26 +18,28 @@
         <span class="sub" th:text="${#lists.size(agendamentos)} + ' agendamento(s)'"></span>
     </form>
 
-    <table class="tabela">
-        <thead>
-        <tr><th>Horário</th><th>Cliente</th><th>Barbeiro</th><th>Serviço</th><th>Status</th><th>Pagamento</th><th>Ação</th></tr>
-        </thead>
-        <tbody>
-        <tr th:each="a : ${agendamentos}">
-            <td><strong th:text="${#temporals.format(a.dataHora, 'HH:mm')}"></strong></td>
-            <td th:text="${a.cliente.nome}"></td>
-            <td th:text="${a.barbeiro.nome}"></td>
-            <td th:text="${a.nomesServicos}"></td>
-            <td><span class="etiqueta" th:classappend="${@fmt.cor(a.status)}" th:text="${@fmt.status(a.status)}"></span></td>
-            <td><span class="etiqueta" th:classappend="${a.pagamento} ? ${@fmt.cor(a.pagamento.status)} : 'neutro'"
-                      th:text="${a.pagamento} ? ${@fmt.status(a.pagamento.status)} : '-'"></span></td>
-            <td><a class="link" th:href="@{/agenda/{id}(id=${a.id})}">DETALHES</a></td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(agendamentos)}">
-            <td colspan="7" class="vazio">Nenhum agendamento para esta data.</td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="rolagem-tabela" tabindex="0" role="region" aria-label="Agenda">
+        <table class="tabela">
+            <thead>
+            <tr><th>Horário</th><th>Cliente</th><th>Barbeiro</th><th>Serviço</th><th>Status</th><th>Pagamento</th><th>Ação</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="a : ${agendamentos}">
+                <td><strong th:text="${#temporals.format(a.dataHora, 'HH:mm')}"></strong></td>
+                <td th:text="${a.cliente.nome}"></td>
+                <td th:text="${a.barbeiro.nome}"></td>
+                <td th:text="${a.nomesServicos}"></td>
+                <td><span class="etiqueta" th:classappend="${@fmt.cor(a.status)}" th:text="${@fmt.status(a.status)}"></span></td>
+                <td><span class="etiqueta" th:classappend="${a.pagamento} ? ${@fmt.cor(a.pagamento.status)} : 'neutro'"
+                          th:text="${a.pagamento} ? ${@fmt.status(a.pagamento.status)} : '-'"></span></td>
+                <td><a class="link" th:href="@{/agenda/{id}(id=${a.id})}">DETALHES</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(agendamentos)}">
+                <td colspan="7" class="vazio">Nenhum agendamento para esta data.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </section>
 </div>
 </body>
